@@ -1,754 +1,780 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape from Tarkov Market Analysis</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Theme Variables */
-        :root {
-            /* Light Theme */
-            --background-light: #f8f9fa;
-            --surface-light: #ffffff;
-            --header-light: #f1f3f5;
-            --border-light: #e9ecef;
-            --text-primary-light: #212529;
-            --text-secondary-light: #495057;
-            --hover-light: #e9ecef;
-            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-            /* Dark Theme */
-            --background-dark: #1a1b1e;
-            --surface-dark: #25262b;
-            --header-dark: #2c2d32;
-            --border-dark: #373a40;
-            --text-primary-dark: #e9ecef;
-            --text-secondary-dark: #adb5bd;
-            --hover-dark: #32333a;
-            --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-            /* Common */
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-        }
-
-        /* Theme Classes */
-        html.dark {
-            --background: var(--background-dark);
-            --surface: var(--surface-dark);
-            --header: var(--header-dark);
-            --border: var(--border-dark);
-            --text-primary: var(--text-primary-dark);
-            --text-secondary: var(--text-secondary-dark);
-            --hover: var(--hover-dark);
-            --shadow: var(--shadow-dark);
-        }
-
-        html.light {
-            --background: var(--background-light);
-            --surface: var(--surface-light);
-            --header: var(--header-light);
-            --border: var(--border-light);
-            --text-primary: var(--text-primary-light);
-            --text-secondary: var(--text-secondary-light);
-            --hover: var(--hover-light);
-            --shadow: var(--shadow-light);
-        }
-
-        /* Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-primary);
-            background-color: var(--background);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header Styles */
-        header {
-            background-color: var(--surface);
-            padding: 2rem 1.5rem;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Background Pattern */
-        header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 20% 50%, var(--primary-color) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, var(--warning-color) 0%, transparent 50%);
-            opacity: 0.05;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--text-primary);
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        main {
-            flex-grow: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            width: 100%;
-        }
-
-        /* Controls */
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .control-group {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        /* Switch Styles */
-        .switch-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 8px;
-            background-color: var(--surface);
-            box-shadow: var(--shadow);
-        }
-
-        .switch {
-            position: relative;
-            width: 52px;
-            height: 26px;
-            flex-shrink: 0;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .switch-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--text-secondary);
-            transition: .4s;
-            border-radius: 26px;
-        }
-
-        .switch-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        input:checked+.switch-slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked+.switch-slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Search Input */
-        .search-container {
-            flex-grow: 2;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            padding-left: 2.5rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background-color: var(--surface);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        /* Results Table */
-        .results-container {
-            background-color: var(--surface);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: var(--header);
-            font-weight: 600;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-            position: relative;
-            padding-right: 2.5rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        th::after {
-            content: "↑↓";
-            position: absolute;
-            right: 1rem;
-            color: var(--text-secondary);
-            opacity: 0.3;
-            font-size: 0.8rem;
-            letter-spacing: -2px;
-            transition: all 0.2s ease;
-        }
-
-        th.sorted-asc::after {
-            content: "↑";
-            opacity: 1;
-            color: var(--primary-color);
-            letter-spacing: normal;
-        }
-
-        th.sorted-desc::after {
-            content: "↓";
-            opacity: 1;
-            color: var(--primary-color);
-            letter-spacing: normal;
-        }
-
-        th:hover {
-            background-color: var(--hover);
-        }
-
-        th:hover::after {
-            opacity: 0.7;
-        }
-
-        td {
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease;
-        }
-
-        tr:hover td {
-            background-color: var(--hover);
-        }
-
-        /* Price Cells */
-        td:nth-child(2),
-        td:nth-child(3),
-        td:nth-child(5) {
-            font-family: 'JetBrains Mono', monospace;
-            text-align: right;
-        }
-
-        /* Offers Cell */
-        td:nth-child(4) {
-            text-align: center;
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        .loading::after {
-            content: "...";
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-
-            0%,
-            20% {
-                content: ".";
-            }
-
-            40% {
-                content: "..";
-            }
-
-            60%,
-            100% {
-                content: "...";
-            }
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 100;
-            padding: 0.5rem;
-            border-radius: 8px;
-            background-color: var(--surface);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--hover);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-            }
-
-            .control-group {
-                width: 100%;
-            }
-
-            .toggle-container,
-            .search-container {
-                width: 100%;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-
-            th,
-            td {
-                padding: 0.75rem;
-            }
-
-            .control-group {
-                display: flex;
-                gap: 1rem;
-                align-items: center;
-            }
-
-            .switch-container {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                padding: 0.75rem 1rem;
-                border-radius: 8px;
-                background-color: var(--surface);
-                border: 1px solid var(--border);
-                box-shadow: var(--shadow);
-            }
-
-            .switch-label {
-                color: var(--text-secondary);
-                font-size: 0.9rem;
-                font-weight: 500;
-            }
-
-            .switch-value {
-                color: var(--text-primary);
-                font-weight: 500;
-                font-size: 0.9rem;
-                min-width: 90px;
-            }
-
-            .switch {
-                position: relative;
-                display: inline-block;
-                width: 44px;
-                height: 24px;
-            }
-
-            .switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-
-            .switch-slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: var(--border);
-                transition: 0.3s;
-                border-radius: 24px;
-            }
-
-            .switch-slider:before {
-                position: absolute;
-                content: "";
-                height: 18px;
-                width: 18px;
-                left: 3px;
-                bottom: 3px;
-                background-color: white;
-                transition: 0.3s;
-                border-radius: 50%;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            input:checked+.switch-slider {
-                background-color: var(--primary-color);
-            }
-
-            input:checked+.switch-slider:before {
-                transform: translateX(20px);
-            }
-
-            input:focus+.switch-slider {
-                box-shadow: 0 0 1px var(--primary-color);
-            }
-
-            @media (max-width: 768px) {
-                .switch-container {
-                    width: 100%;
-                    justify-content: space-between;
-                }
-            }
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--background);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
-        <span id="theme-text">Dark Mode</span>
-    </div>
-
-    <header>
-        <h1>Tarkov Cultist Analysis</h1>
-        <p class="subtitle">Track profitable Cultist Deals</p>
-    </header>
-
-    <main>
-        <div class="controls">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Escape from Tarkov Cultist Circle Calc</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+         :root {
+         --background-light: #f8f9fa;
+         --surface-light: #ffffff;
+         --header-light: #f1f3f5;
+         --border-light: #e9ecef;
+         --text-primary-light: #212529;
+         --text-secondary-light: #495057;
+         --hover-light: #e9ecef;
+         --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+         --background-dark: #1a1b1e;
+         --surface-dark: #25262b;
+         --header-dark: #2c2d32;
+         --border-dark: #373a40;
+         --text-primary-dark: #e9ecef;
+         --text-secondary-dark: #adb5bd;
+         --hover-dark: #32333a;
+         --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+         --primary-color: #3b82f6;
+         --primary-hover: #2563eb;
+         --success-color: #10b981;
+         --danger-color: #ef4444;
+         --warning-color: #f59e0b;
+         }
+         html.dark {
+         --background: var(--background-dark);
+         --surface: var(--surface-dark);
+         --header: var(--header-dark);
+         --border: var(--border-dark);
+         --text-primary: var(--text-primary-dark);
+         --text-secondary: var(--text-secondary-dark);
+         --hover: var(--hover-dark);
+         --shadow: var(--shadow-dark);
+         }
+         html.light {
+         --background: var(--background-light);
+         --surface: var(--surface-light);
+         --header: var(--header-light);
+         --border: var(--border-light);
+         --text-primary: var(--text-primary-light);
+         --text-secondary: var(--text-secondary-light);
+         --hover: var(--hover-light);
+         --shadow: var(--shadow-light);
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+         }
+         body {
+         font-family: 'Inter', sans-serif;
+         color: var(--text-primary);
+         background-color: var(--background);
+         line-height: 1.6;
+         -webkit-font-smoothing: antialiased;
+         min-height: 100vh;
+         display: flex;
+         flex-direction: column;
+         }
+         header {
+         background-color: var(--surface);
+         padding: 2rem 1.5rem;
+         box-shadow: var(--shadow);
+         position: relative;
+         overflow: hidden;
+         }
+         .header-content {
+         position: relative;
+         z-index: 1;
+         max-width: 1200px;
+         margin: 0 auto;
+         }
+         header::before {
+         content: "";
+         position: absolute;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background:
+         radial-gradient(circle at 20% 50%, var(--primary-color) 0%, transparent 50%),
+         radial-gradient(circle at 80% 50%, var(--warning-color) 0%, transparent 50%);
+         opacity: 0.05;
+         }
+         h1 {
+         text-align: center;
+         color: var(--text-primary);
+         font-size: 2.5rem;
+         font-weight: 700;
+         margin-bottom: 0.5rem;
+         letter-spacing: -0.02em;
+         }
+         .subtitle {
+         text-align: center;
+         color: var(--text-secondary);
+         font-size: 1.1rem;
+         margin-bottom: 2rem;
+         }
+         main {
+         flex-grow: 1;
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 2rem;
+         width: 100%;
+         }
+         .controls {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 2rem;
+         gap: 1rem;
+         flex-wrap: wrap;
+         }
+         .control-group {
+         display: flex;
+         gap: 1rem;
+         align-items: center;
+         }
+         .switch-container {
+         display: flex;
+         align-items: center;
+         gap: 0.5rem;
+         padding: 0.5rem;
+         border-radius: 8px;
+         background-color: var(--surface);
+         box-shadow: var(--shadow);
+         }
+         .switch {
+         position: relative;
+         width: 52px;
+         height: 26px;
+         flex-shrink: 0;
+         }
+         .switch input {
+         opacity: 0;
+         width: 0;
+         height: 0;
+         }
+         .switch-slider {
+         position: absolute;
+         cursor: pointer;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: var(--text-secondary);
+         transition: .4s;
+         border-radius: 26px;
+         }
+         .switch-slider:before {
+         position: absolute;
+         content: "";
+         height: 20px;
+         width: 20px;
+         left: 3px;
+         bottom: 3px;
+         background-color: white;
+         transition: .4s;
+         border-radius: 50%;
+         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+         }
+         input:checked+.switch-slider {
+         background-color: var(--primary-color);
+         }
+         input:checked+.switch-slider:before {
+         transform: translateX(26px);
+         }
+         /* Search Input */
+         .search-container {
+         flex-grow: 2;
+         position: relative;
+         }
+         .search-input {
+         width: 100%;
+         padding: 0.75rem 1rem;
+         padding-left: 2.5rem;
+         border: 2px solid var(--border);
+         border-radius: 8px;
+         background-color: var(--surface);
+         color: var(--text-primary);
+         font-size: 1rem;
+         transition: all 0.3s ease;
+         }
+         .search-input:focus {
+         outline: none;
+         border-color: var(--primary-color);
+         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+         }
+         .search-icon {
+         position: absolute;
+         left: 0.75rem;
+         top: 50%;
+         transform: translateY(-50%);
+         color: var(--text-secondary);
+         }
+         /* Results Table */
+         .results-container {
+         background-color: var(--surface);
+         border-radius: 12px;
+         overflow: hidden;
+         box-shadow: var(--shadow);
+         border: 1px solid var(--border);
+         }
+         table {
+         width: 100%;
+         border-collapse: collapse;
+         }
+         th,
+         td {
+         padding: 1rem;
+         text-align: left;
+         border-bottom: 1px solid var(--border);
+         }
+         th {
+         background-color: var(--header);
+         font-weight: 600;
+         cursor: pointer;
+         user-select: none;
+         white-space: nowrap;
+         position: relative;
+         padding-right: 2.5rem;
+         font-size: 0.9rem;
+         text-transform: uppercase;
+         letter-spacing: 0.05em;
+         }
+         th::after {
+         content: "↑↓";
+         position: absolute;
+         right: 1rem;
+         color: var(--text-secondary);
+         opacity: 0.3;
+         font-size: 0.8rem;
+         letter-spacing: -2px;
+         transition: all 0.2s ease;
+         }
+         th.sorted-asc::after {
+         content: "↑";
+         opacity: 1;
+         color: var(--primary-color);
+         letter-spacing: normal;
+         }
+         th.sorted-desc::after {
+         content: "↓";
+         opacity: 1;
+         color: var(--primary-color);
+         letter-spacing: normal;
+         }
+         th:hover {
+         background-color: var(--hover);
+         }
+         th:hover::after {
+         opacity: 0.7;
+         }
+         td {
+         font-size: 0.95rem;
+         transition: background-color 0.2s ease;
+         }
+         tr:hover td {
+         background-color: var(--hover);
+         }
+         td:nth-child(2),
+         td:nth-child(3),
+         td:nth-child(5) {
+         font-family: 'JetBrains Mono', monospace;
+         text-align: right;
+         }
+         td:nth-child(4) {
+         text-align: center;
+         }
+         .loading {
+         text-align: center;
+         padding: 3rem;
+         color: var(--text-secondary);
+         font-size: 1.1rem;
+         }
+         .loading::after {
+         content: "...";
+         animation: dots 1.5s infinite;
+         }
+         @keyframes dots {
+         0%,
+         20% {
+         content: ".";
+         }
+         40% {
+         content: "..";
+         }
+         60%,
+         100% {
+         content: "...";
+         }
+         }
+         /* Theme Toggle */
+         .theme-toggle {
+         position: fixed;
+         top: 1rem;
+         right: 1rem;
+         z-index: 100;
+         padding: 0.5rem;
+         border-radius: 8px;
+         background-color: var(--surface);
+         box-shadow: var(--shadow);
+         border: 1px solid var(--border);
+         display: flex;
+         align-items: center;
+         gap: 0.5rem;
+         cursor: pointer;
+         }
+         .theme-toggle:hover {
+         background-color: var(--hover);
+         }
+         /* Responsive Design */
+         @media (max-width: 768px) {
+         .controls {
+         flex-direction: column;
+         }
+         .control-group {
+         width: 100%;
+         }
+         .toggle-container,
+         .search-container {
+         width: 100%;
+         }
+         table {
+         display: block;
+         overflow-x: auto;
+         }
+         th,
+         td {
+         padding: 0.75rem;
+         }
+         .control-group {
+         display: flex;
+         gap: 1rem;
+         align-items: center;
+         }
+         .switch-container {
+         display: flex;
+         align-items: center;
+         gap: 1rem;
+         padding: 0.75rem 1rem;
+         border-radius: 8px;
+         background-color: var(--surface);
+         border: 1px solid var(--border);
+         box-shadow: var(--shadow);
+         }
+         .switch-label {
+         color: var(--text-secondary);
+         font-size: 0.9rem;
+         font-weight: 500;
+         }
+         .switch-value {
+         color: var(--text-primary);
+         font-weight: 500;
+         font-size: 0.9rem;
+         min-width: 90px;
+         }
+         .switch {
+         position: relative;
+         display: inline-block;
+         width: 44px;
+         height: 24px;
+         }
+         .switch input {
+         opacity: 0;
+         width: 0;
+         height: 0;
+         }
+         .switch-slider {
+         position: absolute;
+         cursor: pointer;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: var(--border);
+         transition: 0.3s;
+         border-radius: 24px;
+         }
+         .switch-slider:before {
+         position: absolute;
+         content: "";
+         height: 18px;
+         width: 18px;
+         left: 3px;
+         bottom: 3px;
+         background-color: white;
+         transition: 0.3s;
+         border-radius: 50%;
+         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+         }
+         input:checked+.switch-slider {
+         background-color: var(--primary-color);
+         }
+         input:checked+.switch-slider:before {
+         transform: translateX(20px);
+         }
+         input:focus+.switch-slider {
+         box-shadow: 0 0 1px var(--primary-color);
+         }
+         @media (max-width: 768px) {
+         .switch-container {
+         width: 100%;
+         justify-content: space-between;
+         }
+         }
+         }
+         ::-webkit-scrollbar {
+         width: 10px;
+         height: 10px;
+         }
+         ::-webkit-scrollbar-track {
+         background: var(--background);
+         }
+         ::-webkit-scrollbar-thumb {
+         background: var(--border);
+         border-radius: 5px;
+         }
+         ::-webkit-scrollbar-thumb:hover {
+         background: var(--text-secondary);
+         }
+      </style>
+   </head>
+   <body>
+      <div class="theme-toggle" onclick="toggleTheme()">
+         <span id="theme-icon">🌙</span>
+         <span id="theme-text">Dark Mode</span>
+      </div>
+      <header>
+         <h1>Tarkov Cultist Analysis</h1>
+         <p class="subtitle">Track profitable Cultist Deals</p>
+      </header>
+      <main>
+         <div class="controls">
             <div class="control-group">
-                <div class="switch-container">
-                    <span class="switch-label">Price Range:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="priceFilterToggle">
-                        <span class="switch-slider"></span>
-                    </label>
-                    <span class="switch-value" id="priceRangeText">350k - 400k</span>
-                </div>
+               <div class="switch-container">
+                  <span class="switch-label">Price Range:</span>
+                  <label class="switch">
+                  <input type="checkbox" id="priceFilterToggle">
+                  <span class="switch-slider"></span>
+                  </label>
+                  <span class="switch-value" id="priceRangeText">350k - 400k</span>
+               </div>
             </div>
             <div class="search-container">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search items...">
+               <input type="text" class="search-input" id="searchInput" placeholder="Search items...">
             </div>
-        </div>
-
-        <div class="results-container">
+         </div>
+         <div class="results-container">
             <div id="results" class="loading">Loading market data...</div>
-        </div>
-    </main>
-
-    <script>
-
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById('theme-icon');
-            const themeText = document.getElementById('theme-text');
-
-            if (html.className === 'dark') {
-                html.className = 'light';
-                themeIcon.textContent = '☀️';
-                themeText.textContent = 'Light Mode';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.className = 'dark';
-                themeIcon.textContent = '🌙';
-                themeText.textContent = 'Dark Mode';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.className = savedTheme;
-        document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-        document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Dark Mode' : 'Light Mode';
-
-        const endpoint = 'https://api.tarkov.dev/graphql';
-        const query = `
-            {
-                items(lang: en) {
-                    name
-                    types
-                    basePrice
-                    avg24hPrice
-                    lastOfferCount
-                }
-            }
-        `;
-
-        let minPrice = 350001;
-        let maxPrice = 400000;
-        let currentData = [];
-        let searchTerm = '';
-
-        const filterAndSortData = (data) => {
-            const filtered = data.items.filter(item =>
-                item.avg24hPrice !== null &&
-                item.basePrice > minPrice / 5 &&
-                (maxPrice === null || item.basePrice <= maxPrice) &&
-                item.lastOfferCount >= 5 &&
-                !item.types.includes('preset') &&
-                item.basePrice > item.avg24hPrice &&
-                item.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            // Always sort by Flea Price initially
-            return filtered.sort((a, b) => a.avg24hPrice - b.avg24hPrice);
-        };
-
-        const formatPrice = (price) => {
-            return new Intl.NumberFormat('en-US').format(Math.round(price));
-        };
-
-        const displayResults = (data, skipSort = false) => {
-            const resultsElement = document.getElementById('results');
-
-            currentData = data;
-            resultsElement.classList.remove('loading'); // Add this line
-
-            if (data.length === 0) {
-                resultsElement.innerHTML = '<p class="loading">No items found matching the criteria.</p>';
-                return;
-            }
-
-
-            const table = document.createElement('table');
-            const headerRow = table.insertRow();
-            const headers = [
-                { text: "Name", key: "name" },
-                { text: "Flea Price ₽", key: "avg24hPrice" },
-                { text: "Base Price ₽", key: "basePrice" },
-                { text: "Offers", key: "lastOfferCount" },
-                { text: "Base Delta ₽", key: "delta" }
-            ];
-
-            headers.forEach(({ text, key }) => {
-                const header = document.createElement('th');
-                header.textContent = text;
-                header.dataset.key = key;
-                header.addEventListener('click', () => sortTable(key));
-
-                // Set initial sort state
-                if (!skipSort && key === "avg24hPrice") {
-                    header.classList.add('sorted-asc');
-                } else if (skipSort && key === currentSortKey) {
-                    header.classList.add(sortDirection === 1 ? 'sorted-asc' : 'sorted-desc');
-                }
-
-                headerRow.appendChild(header);
-            });
-
-            data.forEach(item => {
-                const row = table.insertRow();
-                row.insertCell().textContent = item.name;
-                row.insertCell().textContent = formatPrice(item.avg24hPrice);
-                row.insertCell().textContent = formatPrice(item.basePrice);
-                row.insertCell().textContent = item.lastOfferCount;
-                row.insertCell().textContent = formatPrice(item.basePrice - item.avg24hPrice);
-            });
-
-            resultsElement.innerHTML = '';
-            resultsElement.appendChild(table);
-        };
-
-        let currentSortKey = "avg24hPrice";
-        let sortDirection = 1;
-
-        const sortTable = (key) => {
-            if (currentSortKey === key) {
-                sortDirection *= -1;
-            } else {
-                currentSortKey = key;
-                sortDirection = 1;
-            }
-
-            const sortedData = [...currentData].sort((a, b) => {
-                const aValue = key === "delta" ? (a.basePrice - a.avg24hPrice) : a[key];
-                const bValue = key === "delta" ? (b.basePrice - b.avg24hPrice) : b[key];
-
-                return typeof aValue === 'string'
-                    ? aValue.localeCompare(bValue) * sortDirection
-                    : (aValue - bValue) * sortDirection;
-            });
-
-            const headers = document.querySelectorAll('th');
-            headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
-            const sortedHeader = document.querySelector(`th[data-key="${key}"]`);
-            sortedHeader.classList.add(sortDirection === 1 ? 'sorted-asc' : 'sorted-desc');
-
-            displayResults(sortedData, true);
-        };
-
-        const updatePriceRangeText = () => {
-            const text = document.getElementById('priceFilterToggle').checked
-                ? '400k+'
-                : '350k - 400k';
-            document.getElementById('priceRangeText').textContent = text;
-        };
-
-        const handleFilterChange = () => {
-            const isChecked = document.getElementById('priceFilterToggle').checked;
-            if (isChecked) {
-                minPrice = 400001;
-                maxPrice = null;
-            } else {
-                minPrice = 350001;
-                maxPrice = 400000;
-            }
-            updatePriceRangeText();
-            fetchData();
-        };
-
-        const handleSearch = (event) => {
-            searchTerm = event.target.value;
-            fetchData();
-        };
-
-        const fetchData = () => {
-            const resultsElement = document.getElementById('results');
-            resultsElement.classList.add('loading');
-            resultsElement.innerHTML = '<p>Loading market data</p>';
-            fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.errors) {
-                        throw new Error(data.errors.map(e => e.message).join(', '));
-                    }
-                    const filteredData = filterAndSortData(data.data);
-                    displayResults(filteredData);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('results').innerHTML = `
-                        <p class="loading">Error loading data: ${error.message}</p>
-                    `;
-                });
-        };
-
-        // Event Listeners
-        document.getElementById('priceFilterToggle').addEventListener('change', handleFilterChange);
-        document.getElementById('searchInput').addEventListener('input', handleSearch);
-
-        // Initial load
-        updatePriceRangeText();
-        fetchData();
-    </script>
-</body>
-
+         </div>
+      </main>
+      <script>
+         function toggleTheme() {
+             const html = document.documentElement;
+             const themeIcon = document.getElementById('theme-icon');
+             const themeText = document.getElementById('theme-text');
+             const isDark = html.classList.toggle('dark'); 
+             html.classList.toggle('light', !isDark);
+         
+             if (isDark) {
+                 themeIcon.textContent = '🌙';
+                 themeText.textContent = 'Dark Mode';
+                 localStorage.setItem('theme', 'dark');
+             } else {
+                 themeIcon.textContent = '☀️';
+                 themeText.textContent = 'Light Mode';
+                 localStorage.setItem('theme', 'light');
+             }
+         }
+         
+         function applySavedTheme() {
+             const savedTheme = localStorage.getItem('theme') || 'dark'; 
+             const html = document.documentElement;
+             const themeIcon = document.getElementById('theme-icon');
+             const themeText = document.getElementById('theme-text');
+         
+             html.className = savedTheme; 
+             if (savedTheme === 'dark') {
+                 themeIcon.textContent = '🌙';
+                 themeText.textContent = 'Dark Mode';
+             } else {
+                 themeIcon.textContent = '☀️';
+                 themeText.textContent = 'Light Mode';
+             }
+         }
+         
+         const API_ENDPOINT = 'https://api.tarkov.dev/graphql';
+         const API_QUERY = `{
+             items(lang: en) {
+                 name
+                 types
+                 basePrice
+                 avg24hPrice
+                 lastOfferCount
+             }
+         }`;
+         const CACHE_DURATION_MS = 5 * 60 * 1000;
+         const CACHE_KEY_DATA = 'tarkovMarketData';
+         const CACHE_KEY_TIMESTAMP = 'tarkovMarketTimestamp';
+         
+         let minPrice = 350001;
+         let maxPrice = 400000;
+         let currentData = []; 
+         let allFetchedData = [];
+         let searchTerm = '';
+         let currentSortKey = "avg24hPrice"; 
+         let sortDirection = 1; 
+         let isLoading = false;
+         let searchTimeout;
+         
+         
+         const filterAndSortData = () => {
+             const sourceData = Array.isArray(allFetchedData) ? allFetchedData : [];
+         
+             const filtered = sourceData.filter(item =>
+                 item &&
+                 item.avg24hPrice !== null &&
+                 item.basePrice > minPrice / 5 &&
+                 (maxPrice === null || item.basePrice <= maxPrice) &&
+                 item.lastOfferCount >= 5 &&
+                 Array.isArray(item.types) && !item.types.includes('preset') && 
+                 item.name && !item.name.toLowerCase().includes('poster') &&
+                 item.basePrice > item.avg24hPrice &&
+                 item.name.toLowerCase().includes(searchTerm.toLowerCase())
+             );
+         
+             const sorted = [...filtered].sort((a, b) => {
+                 const aValue = currentSortKey === "delta" ? (a.basePrice - a.avg24hPrice) : a[currentSortKey];
+                 const bValue = currentSortKey === "delta" ? (b.basePrice - b.avg24hPrice) : b[currentSortKey];
+         
+                 if (aValue === null || aValue === undefined) return sortDirection;
+                 if (bValue === null || bValue === undefined) return -sortDirection;
+         
+                 if (typeof aValue === 'string') {
+                     return aValue.localeCompare(bValue) * sortDirection;
+                 } else {
+                     return (Number(aValue) - Number(bValue)) * sortDirection;
+                 }
+             });
+         
+             return sorted;
+         };
+         
+         const formatPrice = (price) => {
+             if (price === null || price === undefined || isNaN(price)) return 'N/A';
+             const numPrice = Number(price);
+             if (numPrice >= 1000000) {
+                 return (Math.round(numPrice / 10000) / 100) + 'M ₽';
+             } else if (numPrice >= 1000) {
+                 return Math.round(numPrice / 1000) + 'k ₽';
+             }
+             return Math.round(numPrice) + ' ₽';
+         };
+         
+         const displayResults = (data) => {
+             const resultsElement = document.getElementById('results');
+             resultsElement.classList.remove('loading'); 
+             resultsElement.innerHTML = ''; 
+         
+             if (!Array.isArray(data) || data.length === 0) {
+                  const message = searchTerm
+                     ? `No items found matching "${searchTerm}" and the current filters.`
+                     : 'No items found matching the current filters.';
+                 resultsElement.innerHTML = `<p style="padding: 2rem; text-align: center; color: var(--text-secondary);">${message}</p>`;
+                 currentData = []; 
+                 return;
+             }
+         
+             currentData = data; 
+         
+             const table = document.createElement('table');
+             const thead = table.createTHead();
+             const tbody = table.createTBody();
+             const headerRow = thead.insertRow();
+             const headers = [
+                 { text: "Name", key: "name" },
+                 { text: "Flea Price", key: "avg24hPrice" },
+                 { text: "Base Price", key: "basePrice" },
+                 { text: "Offers", key: "lastOfferCount" },
+                 { text: "Base Delta", key: "delta" }
+             ];
+         
+             headers.forEach(({ text, key }) => {
+                 const th = document.createElement('th');
+                 th.textContent = text;
+                 th.dataset.key = key;
+                 th.addEventListener('click', () => handleSort(key));
+         
+                 if (key === currentSortKey) {
+                     th.classList.add(sortDirection === 1 ? 'sorted-asc' : 'sorted-desc');
+                 } else {
+                     th.classList.remove('sorted-asc', 'sorted-desc');
+                 }
+                 headerRow.appendChild(th);
+             });
+         
+             data.forEach(item => {
+                 if (!item) return;
+                 const row = tbody.insertRow();
+                 row.insertCell().textContent = item.name || 'Unknown Name';
+                 row.insertCell().textContent = formatPrice(item.avg24hPrice);
+                 row.insertCell().textContent = formatPrice(item.basePrice);
+                 row.insertCell().textContent = item.lastOfferCount !== null && item.lastOfferCount !== undefined ? item.lastOfferCount : 'N/A';
+                  const delta = (item.basePrice !== null && item.avg24hPrice !== null)
+                     ? item.basePrice - item.avg24hPrice
+                     : null;
+                 row.insertCell().textContent = formatPrice(delta);
+             });
+         
+             resultsElement.appendChild(table);
+         };
+         
+         
+         const handleSort = (key) => {
+             if (isLoading) return; 
+         
+             if (currentSortKey === key) {
+                 sortDirection *= -1; 
+             } else {
+                 currentSortKey = key;
+                 sortDirection = 1; 
+             }
+         
+             const processedData = filterAndSortData();
+             displayResults(processedData); 
+         };
+         
+         const updatePriceRangeText = () => {
+             const isChecked = document.getElementById('priceFilterToggle').checked;
+             const text = isChecked ? '400k+' : '350k-400k';
+             document.getElementById('priceRangeText').textContent = text;
+         };
+         
+         const handleFilterChange = () => {
+             if (isLoading) return;
+             const isChecked = document.getElementById('priceFilterToggle').checked;
+             minPrice = isChecked ? 400001 : 350001;
+             maxPrice = isChecked ? null : 400000;
+             updatePriceRangeText();
+             const processedData = filterAndSortData();
+             displayResults(processedData);
+         };
+         
+         const handleSearch = (event) => {
+              if (isLoading) return;
+             searchTerm = event.target.value;
+             clearTimeout(searchTimeout);
+             searchTimeout = setTimeout(() => {
+                 const processedData = filterAndSortData();
+                 displayResults(processedData);
+             }, 300);
+         };
+         
+         
+         const fetchData = () => {
+             if (isLoading) return; 
+             isLoading = true;
+         
+             const resultsElement = document.getElementById('results');
+             resultsElement.classList.add('loading');
+             resultsElement.innerHTML = '<p>Loading market data</p>';
+         
+              const headers = document.querySelectorAll('th');
+             headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
+         
+             const cachedTimestamp = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+             const cachedDataJSON = localStorage.getItem(CACHE_KEY_DATA);
+             const now = Date.now();
+             let isCacheValid = false;
+         
+             if (cachedTimestamp && cachedDataJSON) {
+                 const timestamp = parseInt(cachedTimestamp, 10);
+                 if (!isNaN(timestamp) && (now - timestamp < CACHE_DURATION_MS)) {
+                     try {
+                         allFetchedData = JSON.parse(cachedDataJSON);
+                         if (Array.isArray(allFetchedData)) {
+                              console.log("Using cached data.");
+                             isCacheValid = true;
+                         } else {
+                             console.warn("Cached data is not an array. Ignoring cache.");
+                             allFetchedData = []; 
+                         }
+                     } catch (e) {
+                         console.error("Error parsing cached data:", e);
+                         localStorage.removeItem(CACHE_KEY_DATA);
+                         localStorage.removeItem(CACHE_KEY_TIMESTAMP);
+                         allFetchedData = []; 
+                     }
+                 } else {
+                     console.log("Cache expired.");
+                 }
+             } else {
+                  console.log("No cache found.");
+             }
+         
+             if (isCacheValid) {
+                  const initialData = filterAndSortData();
+                 displayResults(initialData);
+                 isLoading = false; 
+                 resultsElement.classList.remove('loading');
+             } else {
+                  console.log("Fetching new data from API...");
+                 fetch(API_ENDPOINT, {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                     body: JSON.stringify({ query: API_QUERY }),
+                 })
+                     .then(response => {
+                         if (!response.ok) {
+                             return response.text().then(text => {
+                                 throw new Error(`HTTP error! status: ${response.status}, message: ${text || 'No details'}`);
+                             });
+                         }
+                         return response.json();
+                     })
+                     .then(result => {
+                         if (result.errors) {
+                             throw new Error(result.errors.map(e => e.message).join(', '));
+                         }
+                         const items = result.data?.items;
+                         if (!Array.isArray(items)) {
+                             throw new Error("API response did not contain an items array.");
+                         }
+         
+                         allFetchedData = items;
+         
+                         try {
+                             localStorage.setItem(CACHE_KEY_DATA, JSON.stringify(allFetchedData));
+                             localStorage.setItem(CACHE_KEY_TIMESTAMP, now.toString());
+                              console.log("Data cached successfully.");
+                         } catch (e) {
+                             console.error("Error saving data to localStorage:", e);
+                         }
+         
+                         const initialData = filterAndSortData();
+                         displayResults(initialData);
+                     })
+                     .catch(error => {
+                         console.error('Error fetching or processing data:', error);
+                         resultsElement.classList.remove('loading'); 
+                         resultsElement.innerHTML = `
+                             <p style="padding: 2rem; text-align: center; color: var(--danger-color);">
+                                 Error loading data: ${error.message}. Please try again later.
+                             </p>`;
+                         allFetchedData = [];
+                         currentData = [];
+                     })
+                     .finally(() => {
+                         isLoading = false; 
+                         resultsElement.classList.remove('loading');
+                          if (!resultsElement.hasChildNodes() && !isLoading) {
+                              displayResults([]);
+                          }
+                     });
+             }
+         };
+         
+         
+         applySavedTheme();
+         
+         document.getElementById('priceFilterToggle').addEventListener('change', handleFilterChange);
+         document.getElementById('searchInput').addEventListener('input', handleSearch);
+         
+         updatePriceRangeText();
+         fetchData();
+         
+      </script>
+   </body>
 </html>
