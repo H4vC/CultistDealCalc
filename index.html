@@ -1,1162 +1,863 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-   <head>
-      <meta charset="utf8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Escape from Tarkov Market Analysis</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
-      <style>
-         :root {
-         --background-light: #f8f9fa;
-         --surface-light: #ffffff;
-         --header-light: #f1f3f5;
-         --border-light: #e9ecef;
-         --text-primary-light: #212529;
-         --text-secondary-light: #495057;
-         --hover-light: #e9ecef;
-         --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
-         --background-dark: #1a1b1e;
-         --surface-dark: #25262b;
-         --header-dark: #2c2d32;
-         --border-dark: #373a40;
-         --text-primary-dark: #e9ecef;
-         --text-secondary-dark: #adb5bd;
-         --hover-dark: #32333a;
-         --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
-         --primary-color: #3b82f6;
-         --primary-hover: #2563eb;
-         --success-color: #10b981;
-         --danger-color: #ef4444;
-         --warning-color: #f59e0b;
-         }
-         html.dark {
-         --background: var(--background-dark);
-         --surface: var(--surface-dark);
-         --header: var(--header-dark);
-         --border: var(--border-dark);
-         --text-primary: var(--text-primary-dark);
-         --text-secondary: var(--text-secondary-dark);
-         --hover: var(--hover-dark);
-         --shadow: var(--shadow-dark);
-         }
-         html.light {
-         --background: var(--background-light);
-         --surface: var(--surface-light);
-         --header: var(--header-light);
-         --border: var(--border-light);
-         --text-primary: var(--text-primary-light);
-         --text-secondary: var(--text-secondary-light);
-         --hover: var(--hover-light);
-         --shadow: var(--shadow-light);
-         }
-         * {
-         margin: 0;
-         padding: 0;
-         box-sizing: border-box;
-         transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
-         }
-         body {
-         font-family: 'Inter', sans-serif;
-         color: var(--text-primary);
-         background-color: var(--background);
-         line-height: 1.6;
-         -webkit-font-smoothing: antialiased;
-         min-height: 100vh;
-         display: flex;
-         flex-direction: column;
-         }
-         header {
-         background-color: var(--surface);
-         padding: 2rem 1.5rem;
-         box-shadow: var(--shadow);
-         position: relative;
-         overflow: hidden;
-         }
-         .header-content {
-         position: relative;
-         z-index: 1;
-         max-width: 1200px;
-         margin: 0 auto;
-         }
-         header::before {
-         content: "";
-         position: absolute;
-         top: 0;
-         left: 0;
-         right: 0;
-         bottom: 0;
-         background:
-         radial-gradient(circle at 20% 50%, var(--primary-color) 0%, transparent 50%),
-         radial-gradient(circle at 80% 50%, var(--warning-color) 0%, transparent 50%);
-         opacity: 0.05;
-         }
-         h1 {
-         text-align: center;
-         color: var(--text-primary);
-         font-size: 2.5rem;
-         font-weight: 700;
-         margin-bottom: 0.5rem;
-         letter-spacing: -0.02em;
-         }
-         .subtitle {
-         text-align: center;
-         color: var(--text-secondary);
-         font-size: 1.1rem;
-         margin-bottom: 2rem;
-         }
-         main {
-         flex-grow: 1;
-         max-width: 1200px;
-         margin: 0 auto;
-         padding: 2rem;
-         width: 100%;
-         }
-         .controls {
-         display: flex;
-         justify-content: space-between;
-         align-items: center;
-         margin-bottom: 2rem;
-         gap: 1rem; /* Consistent gap */
-         flex-wrap: wrap;
-         }
-         .control-group {
-         display: flex;
-         gap: 1rem;
-         align-items: center;
-         }
-         .search-refresh-group {
-         display: flex;
-         align-items: center;
-         gap: 1rem; /* Consistent gap - SAME as .controls gap */
-         flex-grow: 2;
-         min-width: 250px;
-         }
-         .switch-container {
-         display: flex;
-         align-items: center;
-         gap: 0.5rem;
-         padding: 0.6rem 0.8rem;
-         border-radius: 8px;
-         background-color: var(--surface);
-         box-shadow: var(--shadow);
-         border: 1px solid var(--border);
-         }
-         .switch-label {
-         color: var(--text-secondary);
-         font-size: 0.9rem;
-         font-weight: 500;
-         margin-right: 0.3rem;
-         }
-         .switch-value {
-         color: var(--text-primary);
-         font-weight: 600;
-         font-size: 0.9rem;
-         min-width: 80px;
-         text-align: right;
-         }
-         .switch {
-         position: relative;
-         width: 44px;
-         height: 24px;
-         flex-shrink: 0;
-         }
-         .switch input {
-         opacity: 0;
-         width: 0;
-         height: 0;
-         }
-         .switch-slider {
-         position: absolute;
-         cursor: pointer;
-         top: 0;
-         left: 0;
-         right: 0;
-         bottom: 0;
-         background-color: var(--border);
-         transition: .3s;
-         border-radius: 24px;
-         }
-         .switch-slider:before {
-         position: absolute;
-         content: "";
-         height: 18px;
-         width: 18px;
-         left: 3px;
-         bottom: 3px;
-         background-color: white;
-         transition: .3s;
-         border-radius: 50%;
-         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-         }
-         input:checked+.switch-slider {
-         background-color: var(--primary-color);
-         }
-         input:checked+.switch-slider:before {
-         transform: translateX(20px);
-         }
-         .search-container {
-         flex-grow: 1;
-         position: relative;
-         }
-         .search-input {
-         width: 100%;
-         padding: 0.75rem 1rem;
-         padding-left: 2.5rem;
-         border: 1px solid var(--border);
-         border-radius: 8px;
-         background-color: var(--surface);
-         color: var(--text-primary);
-         font-size: 1rem;
-         transition: all 0.3s ease;
-         box-shadow: var(--shadow);
-         }
-         .search-input:focus {
-         outline: none;
-         border-color: var(--primary-color);
-         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-         }
-         .search-icon {
-         position: absolute;
-         left: 0.75rem;
-         top: 50%;
-         transform: translateY(-50%);
-         color: var(--text-secondary);
-         pointer-events: none;
-         }
-         .refresh-button {
-         display: inline-flex;
-         align-items: center;
-         justify-content: center;
-         gap: 0.5rem;
-         padding: 0.7rem 1rem;
-         border: 1px solid var(--border);
-         border-radius: 8px;
-         background-color: var(--surface);
-         color: var(--text-secondary);
-         font-size: 0.9rem;
-         font-weight: 500;
-         cursor: pointer;
-         transition: all 0.2s ease;
-         box-shadow: var(--shadow);
-         white-space: nowrap;
-         }
-         .refresh-button svg {
-         color: var(--text-secondary);
-         transition: color 0.2s ease;
-         flex-shrink: 0;
-         }
-         .refresh-button:hover {
-         background-color: var(--hover);
-         border-color: var(--primary-color);
-         color: var(--primary-color);
-         }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape from Tarkov Market Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-light: #f8f9fa;
+            --surface-light: #ffffff;
+            --header-light: #f1f3f5;
+            --border-light: #e9ecef;
+            --text-primary-light: #212529;
+            --text-secondary-light: #495057;
+            --hover-light: #e9ecef;
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --background-dark: #1a1b1e;
+            --surface-dark: #25262b;
+            --header-dark: #2c2d32;
+            --border-dark: #373a40;
+            --text-primary-dark: #e9ecef;
+            --text-secondary-dark: #adb5bd;
+            --hover-dark: #32333a;
+            --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+        html.dark {
+            --background: var(--background-dark);
+            --surface: var(--surface-dark);
+            --header: var(--header-dark);
+            --border: var(--border-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --hover: var(--hover-dark);
+            --shadow: var(--shadow-dark);
+        }
+        html.light {
+            --background: var(--background-light);
+            --surface: var(--surface-light);
+            --header: var(--header-light);
+            --border: var(--border-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --hover: var(--hover-light);
+            --shadow: var(--shadow-light);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background-color: var(--background);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: var(--surface);
+            padding: 2rem 1.5rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, var(--primary-color) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, var(--warning-color) 0%, transparent 50%);
+            opacity: 0.05;
+        }
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        main {
+            flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem; /* Consistent gap */
+            flex-wrap: wrap;
+        }
+        .control-group {
+             display: flex;
+             gap: 1rem;
+             align-items: center;
+        }
+        .search-refresh-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* Consistent gap - SAME as .controls gap */
+            flex-grow: 2;
+             min-width: 250px;
+        }
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            background-color: var(--surface);
+            box-shadow: var(--shadow);
+             border: 1px solid var(--border);
+        }
+        .switch-label {
+             color: var(--text-secondary);
+             font-size: 0.9rem;
+             font-weight: 500;
+             margin-right: 0.3rem;
+        }
+        .switch-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            min-width: 80px;
+            text-align: right;
+        }
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        input:checked+.switch-slider {
+            background-color: var(--primary-color);
+        }
+        input:checked+.switch-slider:before {
+            transform: translateX(20px);
+        }
+        .search-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--surface);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+             box-shadow: var(--shadow);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        .refresh-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--surface);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+            white-space: nowrap;
+        }
+        .refresh-button svg {
+             color: var(--text-secondary);
+             transition: color 0.2s ease;
+             flex-shrink: 0;
+        }
+        .refresh-button:hover {
+            background-color: var(--hover);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
          .refresh-button:hover svg {
-         color: var(--primary-color);
+              color: var(--primary-color);
          }
-         .refresh-button:active {
-         background-color: var(--border);
-         box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-         }
-         .refresh-button:disabled {
-         opacity: 0.6;
-         cursor: not-allowed;
-         background-color: var(--border);
-         box-shadow: none;
-         }
+        .refresh-button:active {
+             background-color: var(--border);
+              box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .refresh-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: var(--border);
+             box-shadow: none;
+        }
          .refresh-button:disabled:hover {
-         background-color: var(--border);
-         border-color: var(--border);
-         color: var(--text-secondary);
+              background-color: var(--border);
+              border-color: var(--border);
+              color: var(--text-secondary);
          }
-         .refresh-button:disabled:hover svg {
-         color: var(--text-secondary);
-         }
-         .results-container {
-         background-color: var(--surface);
-         border-radius: 12px;
-         overflow: hidden;
-         box-shadow: var(--shadow);
-         border: 1px solid var(--border);
-         }
-         table {
-         width: 100%;
-         border-collapse: collapse;
-         }
-         th,
-         td {
-         padding: 1rem;
-         text-align: left;
-         border-bottom: 1px solid var(--border);
-         }
-         th {
-         background-color: var(--header);
-         font-weight: 600;
-         cursor: pointer;
-         user-select: none;
-         white-space: nowrap;
-         position: relative;
-         padding-right: 2.5rem;
-         font-size: 0.85rem;
-         text-transform: uppercase;
-         letter-spacing: 0.05em;
-         color: var(--text-secondary);
-         }
-         th::after {
-         content: " ";
-         font-family: sans-serif;
-         position: absolute;
-         right: 1rem;
-         color: var(--text-secondary);
-         opacity: 0.4;
-         font-size: 1.2rem;
-         line-height: 1;
-         transition: all 0.2s ease;
-         }
-         th.sorted-asc::after {
-         content: "▲";
-         opacity: 1;
-         color: var(--primary-color);
-         }
-         th.sorted-desc::after {
-         content: "▼";
-         opacity: 1;
-         color: var(--primary-color);
-         }
-         th:not(.sorted-asc):not(.sorted-desc):hover::after {
-         content: "▲▼";
-         opacity: 0.7;
-         font-size: 0.8rem;
-         letter-spacing: -2px;
-         line-height: 1.4;
-         }
-         th:hover {
-         background-color: var(--hover);
-         color: var(--text-primary);
-         }
-         td {
-         font-size: 0.95rem;
-         transition: background-color 0.2s ease;
-         color: var(--text-primary);
-         }
-         tr:last-child td {
-         border-bottom: none;
-         }
-         tr:hover td {
-         background-color: var(--hover);
-         }
-         td:nth-child(2),
-         td:nth-child(3),
-         td:nth-child(5) {
-         font-family: 'JetBrains Mono', monospace;
-         text-align: right;
-         }
-         td:nth-child(4) {
-         text-align: center;
-         }
-         .loading {
-         text-align: center;
-         padding: 3rem;
-         color: var(--text-secondary);
-         font-size: 1.1rem;
-         }
-         .loading::after {
-         content: "";
-         display: inline-block;
-         width: 20px;
-         height: 20px;
-         margin-left: 10px;
-         border: 3px solid var(--border);
-         border-top-color: var(--primary-color);
-         border-radius: 50%;
-         animation: spin 1s linear infinite;
-         vertical-align: middle;
-         }
+          .refresh-button:disabled:hover svg {
+               color: var(--text-secondary);
+          }
+        .results-container {
+            background-color: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: var(--header);
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            position: relative;
+            padding-right: 2.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+        th::after {
+            content: " ";
+             font-family: sans-serif;
+            position: absolute;
+            right: 1rem;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-size: 1.2rem;
+             line-height: 1;
+            transition: all 0.2s ease;
+        }
+        th.sorted-asc::after {
+            content: "▲";
+            opacity: 1;
+            color: var(--primary-color);
+        }
+        th.sorted-desc::after {
+            content: "▼";
+            opacity: 1;
+            color: var(--primary-color);
+        }
+        th:not(.sorted-asc):not(.sorted-desc):hover::after {
+             content: "▲▼";
+             opacity: 0.7;
+             font-size: 0.8rem;
+             letter-spacing: -2px;
+             line-height: 1.4;
+        }
+        th:hover {
+            background-color: var(--hover);
+             color: var(--text-primary);
+        }
+        td {
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease;
+            color: var(--text-primary);
+        }
+        tr:last-child td {
+             border-bottom: none;
+        }
+        tr:hover td {
+            background-color: var(--hover);
+        }
+        td:nth-child(2),
+        td:nth-child(3),
+        td:nth-child(5) {
+            font-family: 'JetBrains Mono', monospace;
+            text-align: right;
+        }
+        td:nth-child(4) {
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+        }
          @keyframes spin {
-         to { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background-color: var(--surface);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+             color: var(--text-secondary);
+             font-size: 0.9rem;
+        }
+        .theme-toggle:hover {
+            background-color: var(--hover);
+             color: var(--text-primary);
+        }
+        #theme-icon {
+             font-size: 1.1rem;
+             line-height: 1;
+        }
+        @media (max-width: 900px) {
+              .controls {
+                   flex-direction: column;
+                   align-items: stretch;
+                   gap: 1rem;
+              }
+              .control-group {
+                   justify-content: center;
+              }
+              .search-refresh-group {
+                    width: 100%;
+                    justify-content: center;
+                   gap: 1rem;
+              }
+              .search-container {
+                   max-width: 400px;
+              }
          }
-         .theme-toggle {
-         position: fixed;
-         top: 1rem;
-         right: 1rem;
-         z-index: 100;
-         padding: 0.5rem;
-         border-radius: 8px;
-         background-color: var(--surface);
-         box-shadow: var(--shadow);
-         border: 1px solid var(--border);
-         display: flex;
-         align-items: center;
-         gap: 0.5rem;
-         cursor: pointer;
-         color: var(--text-secondary);
-         font-size: 0.9rem;
-         }
-         .theme-toggle:hover {
-         background-color: var(--hover);
-         color: var(--text-primary);
-         }
-         #theme-icon {
-         font-size: 1.1rem;
-         line-height: 1;
-         }
-         @media (max-width: 900px) {
-         .controls {
-         flex-direction: column;
-         align-items: stretch;
-         gap: 1rem;
-         }
-         .control-group {
-         justify-content: center;
-         }
-         .search-refresh-group {
-         width: 100%;
-         justify-content: center;
-         gap: 1rem;
-         }
-         .search-container {
-         max-width: 400px;
-         }
-         }
-         @media (max-width: 768px) {
-         h1 { font-size: 2rem; }
-         .subtitle { font-size: 1rem; }
-         header { padding: 1.5rem 1rem; }
-         main { padding: 1.5rem 1rem; }
-         .search-refresh-group {
-         flex-wrap: wrap;
-         justify-content: center;
-         gap: 1rem;
-         }
-         .search-container {
-         width: 100%;
-         max-width: none;
-         }
-         .refresh-button {
-         flex-grow: 1;
-         justify-content: center;
-         max-width: 200px;
-         }
-         table {
-         display: block;
-         overflow-x: auto;
-         white-space: nowrap;
-         }
-         th, td {
-         padding: 0.8rem 0.75rem;
-         white-space: nowrap;
-         }
-         th { font-size: 0.8rem; }
-         td { font-size: 0.9rem; }
-         th:nth-child(1), td:nth-child(1) { min-width: 150px; }
-         th:nth-child(2), td:nth-child(2) { min-width: 100px; }
-         th:nth-child(3), td:nth-child(3) { min-width: 100px; }
-         th:nth-child(4), td:nth-child(4) { min-width: 60px;  }
-         th:nth-child(5), td:nth-child(5) { min-width: 100px; }
-         }
-         ::-webkit-scrollbar {
-         width: 8px;
-         height: 8px;
-         }
-         ::-webkit-scrollbar-track {
-         background: var(--surface);
-         border-radius: 5px;
-         }
-         ::-webkit-scrollbar-thumb {
-         background: var(--border);
-         border-radius: 5px;
-         border: 2px solid var(--surface);
-         }
-         ::-webkit-scrollbar-thumb:hover {
-         background: var(--text-secondary);
-         }
-      </style>
-   </head>
-   <body>
-      <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
-         <span id="theme-icon">🌙</span>
-         <span id="theme-text" class="theme-text-label">Dark Mode</span>
-      </div>
-      <header>
-         <div class="header-content">
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .subtitle { font-size: 1rem; }
+             header { padding: 1.5rem 1rem; }
+             main { padding: 1.5rem 1rem; }
+             .search-refresh-group {
+                   flex-wrap: wrap;
+                   justify-content: center;
+                   gap: 1rem;
+             }
+             .search-container {
+                 width: 100%;
+                 max-width: none;
+             }
+             .refresh-button {
+                  flex-grow: 1;
+                  justify-content: center;
+                   max-width: 200px;
+             }
+            table {
+                display: block;
+                overflow-x: auto;
+                 white-space: nowrap;
+            }
+             th, td {
+                 padding: 0.8rem 0.75rem;
+                 white-space: nowrap;
+            }
+             th { font-size: 0.8rem; }
+             td { font-size: 0.9rem; }
+             th:nth-child(1), td:nth-child(1) { min-width: 150px; }
+             th:nth-child(2), td:nth-child(2) { min-width: 100px; }
+             th:nth-child(3), td:nth-child(3) { min-width: 100px; }
+             th:nth-child(4), td:nth-child(4) { min-width: 60px;  }
+             th:nth-child(5), td:nth-child(5) { min-width: 100px; }
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+             border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+             border: 2px solid var(--surface);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text" class="theme-text-label">Dark Mode</span>
+    </div>
+
+    <header>
+        <div class="header-content">
             <h1>Tarkov Cultist Analysis</h1>
             <p class="subtitle">Track profitable Cultist Deals</p>
-         </div>
-      </header>
-      <main>
-         <div class="controls">
+        </div>
+    </header>
+
+    <main>
+        <div class="controls">
             <div class="control-group">
-               <div class="switch-container">
-                  <span class="switch-label">Base Price:</span>
-                  <label class="switch" title="Toggle price range filter">
-                  <input type="checkbox" id="priceFilterToggle">
-                  <span class="switch-slider"></span>
-                  </label>
-                  <span class="switch-value" id="priceRangeText">350k-400k</span>
-               </div>
+                <div class="switch-container">
+                    <span class="switch-label">Base Price:</span>
+                    <label class="switch" title="Toggle price range filter">
+                        <input type="checkbox" id="priceFilterToggle">
+                        <span class="switch-slider"></span>
+                    </label>
+                    <span class="switch-value" id="priceRangeText">350k-400k</span>
+                </div>
             </div>
             <div class="search-refresh-group">
-               <div class="search-container">
-                  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-                  </svg>
-                  <input type="text" class="search-input" id="searchInput" placeholder="Search items by name...">
-               </div>
-               <button id="refreshButton" class="refresh-button" title="Force refresh data from API">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-                     <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.204 2.101l-.724.724a.75.75 0 11-1.06-1.06l.984-.984a.75.75 0 011.203.26l.06.118A7 7 0 0016.75 10h-1.438Zm-1.816-4.525a.75.75 0 01-1.06 1.06l-.984.984a.75.75 0 01-1.203-.26l-.06-.118a7.001 7.001 0 00-11.09 3.791 7 7 0 0012.317 3.91l.724-.724a.75.75 0 111.06 1.06l-.984.984a.75.75 0 01-1.203-.26l-.06-.118a8.5 8.5 0 01-14.874-4.795 8.5 8.5 0 0114.638-5.41l-.724.724a.75.75 0 11-1.06-1.06l.984-.984a.75.75 0 011.203.26l.06.118a7.001 7.001 0 001.776 3.791H16.75a.75.75 0 010 1.5h-3.254Z" clip-rule="evenodd" />
-                  </svg>
-                  <span>Refresh</span>
-               </button>
+                <div class="search-container">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                       <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                   </svg>
+                   <input type="text" class="search-input" id="searchInput" placeholder="Search items by name...">
+                </div>
+                <button id="refreshButton" class="refresh-button" title="Force refresh data from API">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                        <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.204 2.101l-.724.724a.75.75 0 11-1.06-1.06l.984-.984a.75.75 0 011.203.26l.06.118A7 7 0 0016.75 10h-1.438Zm-1.816-4.525a.75.75 0 01-1.06 1.06l-.984.984a.75.75 0 01-1.203-.26l-.06-.118a7.001 7.001 0 00-11.09 3.791 7 7 0 0012.317 3.91l.724-.724a.75.75 0 111.06 1.06l-.984.984a.75.75 0 01-1.203-.26l-.06-.118a8.5 8.5 0 01-14.874-4.795 8.5 8.5 0 0114.638-5.41l-.724.724a.75.75 0 11-1.06-1.06l.984-.984a.75.75 0 011.203.26l.06.118a7.001 7.001 0 001.776 3.791H16.75a.75.75 0 010 1.5h-3.254Z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Refresh</span>
+                </button>
             </div>
-         </div>
-         <div class="results-container">
+        </div>
+
+        <div class="results-container">
             <div id="results" class="loading">Loading market data</div>
-         </div>
-      </main>
-      <script>
-         /**
-         * Tarkov Market Data Viewer Script
-         *
-         * Fetches data from the Tarkov.dev API, displays it in a sortable table,
-         * allows filtering by price and name, caches data in localStorage,
-         * and supports theme switching.
-         */
-         (function() {
-         'use strict'; // Enforce stricter parsing and error handling
-         
-         // --- Configuration ---
-         const CONFIG = {
-         API_ENDPOINT: 'https://api.tarkov.dev/graphql',
-         API_QUERY: `{
-             items(lang: en) {
-                 name
-                 types
-                 basePrice
-                 avg24hPrice
-                 lastOfferCount
-             }
-         }`,
-         CACHE_DURATION_MS: 5 * 60 * 1000, // 5 minutes
-         CACHE_KEY_DATA: 'tarkovMarketData',
-         CACHE_KEY_TIMESTAMP: 'tarkovMarketTimestamp',
-         MIN_OFFERS: 5,
-         EXCLUDED_ITEM_TYPES: ['preset'],
-         EXCLUDED_NAME_SUBSTRINGS: ['poster'],
-         PRICE_THRESHOLD_LOW_DEFAULT: 350001,
-         PRICE_THRESHOLD_HIGH_DEFAULT: 400001, // tarkov bug with 400000 <= 400000 in cultust logic instead of being >=
-         PRICE_THRESHOLD_HIGH_TOGGLED: 400001,
-         SEARCH_DEBOUNCE_MS: 300,
-         ELEMENT_IDS: {
-             themeIcon: 'theme-icon',
-             themeText: 'theme-text',
-             results: 'results',
-             refreshButton: 'refreshButton',
-             priceFilterToggle: 'priceFilterToggle',
-             priceRangeText: 'priceRangeText',
-             searchInput: 'searchInput',
-         },
-         CSS_CLASSES: {
-             dark: 'dark',
-             light: 'light',
-             loading: 'loading',
-             sortedAsc: 'sorted-asc',
-             sortedDesc: 'sorted-desc',
-             errorMessage: 'error-message', // Added for styling errors
-             noResultsMessage: 'no-results-message', // Added for styling no results
-         },
-         SORT_KEYS: {
-             name: 'name',
-             fleaPrice: 'avg24hPrice',
-             basePrice: 'basePrice',
-             offers: 'lastOfferCount',
-             delta: 'delta', // Calculated field
-         },
-         THEME_STORAGE_KEY: 'theme',
-         DEFAULT_THEME: 'dark',
-         ICONS: {
-             dark: '🌙',
-             light: '☀️',
-         },
-         TEXT: {
-             darkMode: 'Dark Mode',
-             lightMode: 'Light Mode',
-             priceRangeLow: '350k-400k',
-             priceRangeHigh: '400k+',
-             loading: 'Loading market data...',
-             errorPrefix: 'Error loading data: ',
-             errorSuffix: '. Please try refreshing.',
-             noResultsFound: 'No items found matching the current filters.',
-             noResultsWithSearch: (term) => `No items found matching "${term}" and the current filters.`,
-         }
-         };
-         
-         // --- State Variables ---
-         let minPrice = CONFIG.PRICE_THRESHOLD_LOW_DEFAULT;
-         let maxPrice = CONFIG.PRICE_THRESHOLD_HIGH_DEFAULT;
-         let allFetchedData = []; // Holds the raw data from the API or cache
-         let searchTerm = '';
-         let currentSortKey = CONFIG.SORT_KEYS.fleaPrice;
-         let sortDirection = 1; // 1 for ascending, -1 for descending
-         let isLoading = false;
-         let searchTimeoutId = null;
-         let refreshIntervalId = null;
-         
-         // --- DOM Element References ---
-         // Initialized in init() after DOM is loaded
-         let themeIconEl, themeTextEl, resultsEl, refreshButtonEl, priceFilterToggleEl, priceRangeTextEl, searchInputEl;
-         
-         // --- Utility Functions ---
-         
-         /**
-         * Safely sets an item in localStorage.
-         * @param {string} key The key to set.
-         * @param {string} value The value to set.
-         */
-         function safeSetLocalStorage(key, value) {
-         try {
-             localStorage.setItem(key, value);
-         } catch (e) {
-             console.error(`Error saving to localStorage (key: ${key}):`, e);
-             // Optionally notify the user if storage is full/unavailable
-         }
-         }
-         
-         /**
-         * Formats a number into a Tarkov-style price string (e.g., 1.2M ₽, 50k ₽, 500 ₽).
-         * Returns 'N/A' if the price is invalid.
-         * @param {number|null|undefined} price The price to format.
-         * @returns {string} The formatted price string or 'N/A'.
-         */
-         const formatPrice = (price) => {
-         if (price === null || price === undefined || isNaN(price)) return 'N/A';
-         const numPrice = Number(price);
-         if (numPrice >= 1000000) {
-             // Round to two decimal places for millions
-             return (Math.round(numPrice / 10000) / 100) + 'M ₽';
-         } else if (numPrice >= 1000) {
-             // Round to nearest thousand
-             return Math.round(numPrice / 1000) + 'k ₽';
-         }
-         // Round to nearest whole number for values below 1000
-         return Math.round(numPrice) + ' ₽';
-         };
-         
-         // --- Theme Management ---
-         
-         /**
-         * Updates the theme icon, text, and HTML class based on the current theme.
-         * @param {'dark' | 'light'} theme The theme to apply.
-         */
-         function updateThemeUI(theme) {
-         if (!themeIconEl || !themeTextEl) return; // Elements might not be present
-         
-         const isDark = theme === CONFIG.CSS_CLASSES.dark;
-         document.documentElement.className = theme; // Directly set class
-         themeIconEl.textContent = isDark ? CONFIG.ICONS.dark : CONFIG.ICONS.light;
-         themeTextEl.textContent = isDark ? CONFIG.TEXT.darkMode : CONFIG.TEXT.lightMode;
-         }
-         
-         /**
-         * Toggles the theme between light and dark, saves the preference, and updates the UI.
-         */
-         function toggleTheme() {
-         const currentTheme = document.documentElement.classList.contains(CONFIG.CSS_CLASSES.dark)
-             ? CONFIG.CSS_CLASSES.light
-             : CONFIG.CSS_CLASSES.dark;
-         safeSetLocalStorage(CONFIG.THEME_STORAGE_KEY, currentTheme);
-         updateThemeUI(currentTheme);
-         }
-         
-         /**
-         * Applies the theme saved in localStorage or the default theme on initial load.
-         */
-         function applySavedTheme() {
-         const savedTheme = localStorage.getItem(CONFIG.THEME_STORAGE_KEY) || CONFIG.DEFAULT_THEME;
-         updateThemeUI(savedTheme);
-         }
-         
-         // --- Data Filtering and Sorting ---
-         
-         /**
-         * Filters and sorts the fetched data based on current state (searchTerm, price range, sort key/direction).
-         * @returns {Array} The filtered and sorted array of items.
-         */
-         const filterAndSortData = () => {
-         // Ensure sourceData is always an array, even if allFetchedData is somehow invalid
-         const sourceData = Array.isArray(allFetchedData) ? allFetchedData : [];
-         
-         const filtered = sourceData.filter(item => {
-             // Basic validity check for the item object and essential properties
-             if (!item || typeof item !== 'object' || item.avg24hPrice === null || item.avg24hPrice === undefined || item.basePrice === null || item.basePrice === undefined) {
-                 return false;
-             }
-         
-             // Price range filter
-             const basePriceNum = Number(item.basePrice);
-             const avgPriceNum = Number(item.avg24hPrice);
-             const passesPriceRange = (maxPrice === null || basePriceNum <= maxPrice) && basePriceNum >= minPrice;
-         
-             // Other filters
-             const passesMinOffers = item.lastOfferCount >= CONFIG.MIN_OFFERS;
-             const isNotExcludedType = Array.isArray(item.types) && !item.types.some(type => CONFIG.EXCLUDED_ITEM_TYPES.includes(type));
-             const nameValid = typeof item.name === 'string' && item.name.trim() !== '';
-             const isNotExcludedName = nameValid && !CONFIG.EXCLUDED_NAME_SUBSTRINGS.some(sub => item.name.toLowerCase().includes(sub));
-             const basePriceHigher = basePriceNum > avgPriceNum;
-             const matchesSearch = nameValid && item.name.toLowerCase().includes(searchTerm.toLowerCase());
-         
-             return passesPriceRange && passesMinOffers && isNotExcludedType && isNotExcludedName && basePriceHigher && matchesSearch;
-         });
-         
-         // Sorting logic
-         const sorted = [...filtered].sort((a, b) => {
-             let aValue, bValue;
-         
-             // Calculate delta on the fly if sorting by delta
-             if (currentSortKey === CONFIG.SORT_KEYS.delta) {
-                 aValue = (a.basePrice !== null && a.avg24hPrice !== null) ? (Number(a.basePrice) - Number(a.avg24hPrice)) : null;
-                 bValue = (b.basePrice !== null && b.avg24hPrice !== null) ? (Number(b.basePrice) - Number(b.avg24hPrice)) : null;
-             } else {
-                 aValue = a[currentSortKey];
-                 bValue = b[currentSortKey];
-             }
-         
-             // Handle null or undefined values - push them to the end regardless of sort direction
-             if (aValue === null || aValue === undefined) return 1;
-             if (bValue === null || bValue === undefined) return -1;
-         
-             // Perform comparison based on type
-             if (typeof aValue === 'string' && typeof bValue === 'string') {
-                 return aValue.localeCompare(bValue) * sortDirection;
-             } else {
-                 // Attempt numeric comparison
-                 const numA = Number(aValue);
-                 const numB = Number(bValue);
-                 // If conversion results in NaN, treat them as equal for sorting stability,
-                 // though ideally, data should be clean or handled earlier.
-                 if (isNaN(numA) || isNaN(numB)) {
-                     return 0;
-                 }
-                 return (numA - numB) * sortDirection;
-             }
-         });
-         
-         return sorted;
-         };
-         
-         // --- UI Display ---
-         
-         /**
-         * Updates the sort indicator classes on table headers.
-         */
-         function updateSortHeadersUI() {
-         if (!resultsEl) return;
-         const headers = resultsEl.querySelectorAll('th[data-key]');
-         headers.forEach(th => {
-             const key = th.dataset.key;
-             th.classList.remove(CONFIG.CSS_CLASSES.sortedAsc, CONFIG.CSS_CLASSES.sortedDesc);
-             if (key === currentSortKey) {
-                 th.classList.add(sortDirection === 1 ? CONFIG.CSS_CLASSES.sortedAsc : CONFIG.CSS_CLASSES.sortedDesc);
-             }
-         });
-         }
-         
-         /**
-         * Displays the data in the results table or shows a message if no data.
-         * @param {Array} data The data to display (should be filtered and sorted).
-         */
-         const displayResults = (data) => {
-         if (!resultsEl) return; // Ensure results element exists
-         
-         resultsEl.classList.remove(CONFIG.CSS_CLASSES.loading);
-         resultsEl.innerHTML = ''; // Clear previous results
-         
-         if (!Array.isArray(data) || data.length === 0) {
-             const message = searchTerm
-                 ? CONFIG.TEXT.noResultsWithSearch(searchTerm)
-                 : CONFIG.TEXT.noResultsFound;
-             // Use a paragraph with a specific class for styling
-             resultsEl.innerHTML = `<p class="${CONFIG.CSS_CLASSES.noResultsMessage}">${message}</p>`;
-             // currentData = []; // Reset currentData if needed, though it's not used elsewhere after display
-             return;
-         }
-         
-         // currentData = data; // Store displayed data if needed elsewhere
-         
-         const table = document.createElement('table');
-         const thead = table.createTHead();
-         const tbody = table.createTBody();
-         const headerRow = thead.insertRow();
-         
-         // Define headers based on CONFIG
-         const headers = [
-             { text: "Name", key: CONFIG.SORT_KEYS.name },
-             { text: "Flea Price", key: CONFIG.SORT_KEYS.fleaPrice },
-             { text: "Base Price", key: CONFIG.SORT_KEYS.basePrice },
-             { text: "Offers", key: CONFIG.SORT_KEYS.offers },
-             { text: "Base Delta", key: CONFIG.SORT_KEYS.delta }
-         ];
-         
-         // Create header cells
-         headers.forEach(({ text, key }) => {
-             const th = document.createElement('th');
-             th.textContent = text;
-             th.dataset.key = key; // Use data-* attribute for the sort key
-             th.style.cursor = 'pointer'; // Indicate clickable
-             th.addEventListener('click', () => handleSort(key));
-             headerRow.appendChild(th);
-         });
-         
-         // Use DocumentFragment for performance when adding many rows
-         const fragment = document.createDocumentFragment();
-         data.forEach(item => {
-             // Skip if item is somehow invalid (though filtering should prevent this)
-             if (!item) return;
-         
-             const row = document.createElement('tr'); // More explicit than insertRow
-         
-             // Create and append cells
-             const nameCell = row.insertCell();
-             nameCell.textContent = item.name || 'Unknown Name'; // Handle potential missing names
-         
-             const fleaPriceCell = row.insertCell();
-             fleaPriceCell.textContent = formatPrice(item.avg24hPrice);
-         
-             const basePriceCell = row.insertCell();
-             basePriceCell.textContent = formatPrice(item.basePrice);
-         
-             const offersCell = row.insertCell();
-             offersCell.textContent = (item.lastOfferCount !== null && item.lastOfferCount !== undefined) ? item.lastOfferCount : 'N/A';
-         
-             // Calculate delta for display
-             const deltaCell = row.insertCell();
-             const delta = (item.basePrice !== null && item.avg24hPrice !== null)
-                 ? Number(item.basePrice) - Number(item.avg24hPrice)
-                 : null;
-             deltaCell.textContent = formatPrice(delta);
-         
-             fragment.appendChild(row); // Add row to fragment
-         });
-         
-         tbody.appendChild(fragment); // Append all rows at once
-         resultsEl.appendChild(table);
-         updateSortHeadersUI(); // Set initial sort indicators
-         };
-         
-         // --- Event Handlers ---
-         
-         /**
-         * Handles clicking on table headers to change sorting.
-         * @param {string} key The sort key associated with the clicked header.
-         */
-         const handleSort = (key) => {
-         if (isLoading) return; // Prevent sorting while loading
-         
-         if (currentSortKey === key) {
-             // Reverse direction if clicking the same key
-             sortDirection *= -1;
-         } else {
-             // Set new key and default to ascending
-             currentSortKey = key;
-             sortDirection = 1;
-         }
-         // Re-filter and sort with new settings, then display
-         const processedData = filterAndSortData();
-         displayResults(processedData);
-         // updateSortHeadersUI(); // Called within displayResults now
-         };
-         
-         /**
-         * Updates the descriptive text for the price range filter.
-         */
-         const updatePriceRangeText = () => {
-         if (!priceFilterToggleEl || !priceRangeTextEl) return;
-         const isChecked = priceFilterToggleEl.checked;
-         priceRangeTextEl.textContent = isChecked ? CONFIG.TEXT.priceRangeHigh : CONFIG.TEXT.priceRangeLow;
-         };
-         
-         /**
-         * Handles changes to the price filter toggle.
-         */
-         const handleFilterChange = () => {
-         if (isLoading || !priceFilterToggleEl) return; // Prevent filtering while loading
-         
-         const isChecked = priceFilterToggleEl.checked;
-         // Update price range based on toggle state
-         minPrice = isChecked ? CONFIG.PRICE_THRESHOLD_HIGH_TOGGLED : CONFIG.PRICE_THRESHOLD_LOW_DEFAULT;
-         maxPrice = isChecked ? null : CONFIG.PRICE_THRESHOLD_HIGH_DEFAULT; // null means no upper limit
-         
-         updatePriceRangeText(); // Update descriptive text
-         // Re-filter, sort, and display data
-         const processedData = filterAndSortData();
-         displayResults(processedData);
-         };
-         
-         /**
-         * Handles input in the search field with debouncing.
-         * @param {Event} event The input event object.
-         */
-         const handleSearch = (event) => {
-         if (isLoading) return; // Prevent searching while loading
-         
-         searchTerm = event.target.value.trim(); // Use trimmed value
-         
-         // Clear previous timeout to debounce
-         clearTimeout(searchTimeoutId);
-         
-         // Set new timeout to filter after user stops typing
-         searchTimeoutId = setTimeout(() => {
-             const processedData = filterAndSortData();
-             displayResults(processedData);
-         }, CONFIG.SEARCH_DEBOUNCE_MS);
-         };
-         
-         /**
-         * Handles the click on the manual refresh button.
-         */
-         const handleRefreshClick = () => {
-         if (isLoading) return;
-         // Fetch data immediately, ignoring cache and showing loading indicators
-         fetchData(false, true);
-         };
-         
-         // --- Data Fetching and Caching ---
-         
-         /**
-         * Sets the loading state for the UI.
-         * @param {boolean} loading Whether the application is currently loading data.
-         */
-         function setLoadingState(loading) {
-         isLoading = loading;
-         
-         // Toggle 'disabled' attribute on interactive elements
-         refreshButtonEl?.toggleAttribute('disabled', loading);
-         priceFilterToggleEl?.toggleAttribute('disabled', loading);
-         searchInputEl?.toggleAttribute('disabled', loading);
-         
-         // Add/remove a global loading class for styling (e.g., cursor, opacity)
-         document.body.classList.toggle(CONFIG.CSS_CLASSES.loading, loading);
-         
-         // Indicate loading state in the results area (if not already handled by fetch)
-         if (loading && resultsEl && !resultsEl.classList.contains(CONFIG.CSS_CLASSES.loading)) {
-              // resultsEl.innerHTML = `<p>${CONFIG.TEXT.loading}</p>`; // Display loading text
-              // resultsEl.classList.add(CONFIG.CSS_CLASSES.loading); // Add loading class
-         } else if (!loading && resultsEl) {
-             // resultsEl.classList.remove(CONFIG.CSS_CLASSES.loading); // Ensure loading class is removed
-         }
-         }
-         
-         
-         /**
-         * Fetches data from the API or retrieves it from cache.
-         * Uses async/await for cleaner asynchronous flow.
-         * @param {boolean} [isAutoRefresh=false] - Indicates if the fetch is triggered by the auto-refresh interval.
-         * @param {boolean} [force=false] - If true, bypasses the cache and fetches fresh data.
-         */
-         async function fetchData(isAutoRefresh = false, force = false) {
-         if (isLoading) {
-             console.log("Fetch skipped: already loading.");
-             return;
-         }
-         
-         setLoadingState(true); // Set loading state for UI
-         const now = Date.now();
-         let dataToDisplay = null; // Variable to hold the data that will be displayed
-         
-         // --- Cache Check ---
-         const cachedTimestampStr = localStorage.getItem(CONFIG.CACHE_KEY_TIMESTAMP);
-         const cachedDataJSON = localStorage.getItem(CONFIG.CACHE_KEY_DATA);
-         let isCacheValid = false;
-         
-         if (!force && cachedTimestampStr && cachedDataJSON) {
-             const timestamp = parseInt(cachedTimestampStr, 10);
-             if (!isNaN(timestamp) && (now - timestamp < CONFIG.CACHE_DURATION_MS)) {
-                 try {
-                     const parsedCacheData = JSON.parse(cachedDataJSON);
-                     if (Array.isArray(parsedCacheData)) {
-                         allFetchedData = parsedCacheData; // Load data from cache
-                         isCacheValid = true;
-                         if (!isAutoRefresh) console.log("Using valid cached data.");
-                     } else {
-                         console.warn("Cached data is not an array. Ignoring cache.");
-                         localStorage.removeItem(CONFIG.CACHE_KEY_DATA); // Clear invalid cache
-                         localStorage.removeItem(CONFIG.CACHE_KEY_TIMESTAMP);
-                     }
-                 } catch (e) {
-                     console.error("Error parsing cached data:", e);
-                     localStorage.removeItem(CONFIG.CACHE_KEY_DATA); // Clear corrupted cache
-                     localStorage.removeItem(CONFIG.CACHE_KEY_TIMESTAMP);
-                 }
-             } else {
-                  if (!isAutoRefresh) console.log("Cache expired.");
-             }
-         } else if (force) {
-              console.log("Force refresh requested, ignoring cache.");
-         } else {
-              if (!isAutoRefresh) console.log("No valid cache found.");
-         }
-         
-         // --- Fetch from API if needed ---
-         if (!isCacheValid) {
-             // Show loading message only for manual refresh or initial load
-             if ((force || !isAutoRefresh) && resultsEl) {
-                 console.log(`Fetching new data from API... (Force: ${force}, AutoRefresh: ${isAutoRefresh})`);
-                 resultsEl.classList.add(CONFIG.CSS_CLASSES.loading);
-                 resultsEl.innerHTML = `<p>${CONFIG.TEXT.loading}</p>`;
-                 // Clear sort indicators during load
-                 const headers = resultsEl?.querySelectorAll('th');
-                 headers?.forEach(h => h.classList.remove(CONFIG.CSS_CLASSES.sortedAsc, CONFIG.CSS_CLASSES.sortedDesc));
-             } else {
-                  console.log("Auto-refresh: Cache invalid or expired, fetching in background...");
-             }
-         
-             try {
-                 const response = await fetch(CONFIG.API_ENDPOINT, {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                     body: JSON.stringify({ query: CONFIG.API_QUERY }),
-                 });
-         
-                 // Handle HTTP errors (e.g., 404, 500)
-                 if (!response.ok) {
-                     let errorText = 'Unknown error';
-                     try {
-                         // Try to get more specific error text from the response body
-                         errorText = await response.text();
-                     } catch (_) { /* Ignore potential errors reading the text body */ }
-                     throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
-                 }
-         
-                 // Parse the JSON response
-                 const result = await response.json();
-         
-                 // Handle GraphQL-specific errors returned in the response body
-                 if (result.errors) {
-                     throw new Error(`API Error: ${result.errors.map(e => e.message).join(', ')}`);
-                 }
-         
-                 // Validate the structure of the successful response
-                 const items = result.data?.items;
-                 if (!Array.isArray(items)) {
-                     throw new Error("API response did not contain a valid items array in data.");
-                 }
-         
-                 // Success: Update data and cache
-                 console.log("Data fetched successfully from API.");
-                 allFetchedData = items;
-                 safeSetLocalStorage(CONFIG.CACHE_KEY_DATA, JSON.stringify(allFetchedData));
-                 safeSetLocalStorage(CONFIG.CACHE_KEY_TIMESTAMP, now.toString());
-                 console.log("Data cached successfully.");
-         
-             } catch (error) {
-                 console.error('Error during fetch operation:', error);
-                 // Display error message in the results area for user feedback
-                 // Only show error prominently on manual refresh or initial load
-                 if ((force || !isAutoRefresh) && resultsEl) {
-                      resultsEl.innerHTML = `<p class="${CONFIG.CSS_CLASSES.errorMessage}">${CONFIG.TEXT.errorPrefix}${error.message}${CONFIG.TEXT.errorSuffix}</p>`;
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const isDark = html.classList.toggle('dark');
+            html.classList.toggle('light', !isDark);
+
+            if (isDark) {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            html.className = savedTheme;
+            if (savedTheme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            }
+        }
+
+
+        const API_ENDPOINT = 'https://api.tarkov.dev/graphql';
+        const API_QUERY = `{
+            items(lang: en) {
+                name
+                types
+                basePrice
+                avg24hPrice
+                lastOfferCount
+            }
+        }`;
+        const CACHE_DURATION_MS = 5 * 60 * 1000;
+        const CACHE_KEY_DATA = 'tarkovMarketData';
+        const CACHE_KEY_TIMESTAMP = 'tarkovMarketTimestamp';
+
+        let minPrice = 350001;
+        let maxPrice = 400000;
+        let currentData = [];
+        let allFetchedData = [];
+        let searchTerm = '';
+        let currentSortKey = "avg24hPrice";
+        let sortDirection = 1;
+        let isLoading = false;
+        let searchTimeout;
+        let refreshIntervalId = null;
+
+        const refreshButton = document.getElementById('refreshButton');
+        const resultsElement = document.getElementById('results');
+
+
+        const filterAndSortData = () => {
+            const sourceData = Array.isArray(allFetchedData) ? allFetchedData : [];
+            const filtered = sourceData.filter(item =>
+                item &&
+                item.avg24hPrice !== null &&
+                item.basePrice > minPrice / 5 &&
+                (maxPrice === null || item.basePrice <= maxPrice) &&
+                item.lastOfferCount >= 5 &&
+                Array.isArray(item.types) && !item.types.includes('preset') &&
+                item.name && !item.name.toLowerCase().includes('poster') &&
+                item.basePrice > item.avg24hPrice &&
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const sorted = [...filtered].sort((a, b) => {
+                const aValue = currentSortKey === "delta" ? (a.basePrice - a.avg24hPrice) : a[currentSortKey];
+                const bValue = currentSortKey === "delta" ? (b.basePrice - b.avg24hPrice) : b[currentSortKey];
+                if (aValue === null || aValue === undefined) return sortDirection;
+                if (bValue === null || bValue === undefined) return -sortDirection;
+                if (typeof aValue === 'string') {
+                    return aValue.localeCompare(bValue) * sortDirection;
+                } else {
+                    return (Number(aValue) - Number(bValue)) * sortDirection;
+                }
+            });
+            return sorted;
+        };
+
+        const formatPrice = (price) => {
+            if (price === null || price === undefined || isNaN(price)) return 'N/A';
+            const numPrice = Number(price);
+            if (numPrice >= 1000000) {
+                return (Math.round(numPrice / 10000) / 100) + 'M ₽';
+            } else if (numPrice >= 1000) {
+                return Math.round(numPrice / 1000) + 'k ₽';
+            }
+            return Math.round(numPrice) + ' ₽';
+        };
+
+        const displayResults = (data) => {
+            resultsElement.classList.remove('loading');
+            resultsElement.innerHTML = '';
+
+            if (!Array.isArray(data) || data.length === 0) {
+                 const message = searchTerm
+                    ? `No items found matching "${searchTerm}" and the current filters.`
+                    : 'No items found matching the current filters.';
+                resultsElement.innerHTML = `<p style="padding: 2rem; text-align: center; color: var(--text-secondary);">${message}</p>`;
+                currentData = [];
+                return;
+            }
+
+            currentData = data;
+
+            const table = document.createElement('table');
+            const thead = table.createTHead();
+            const tbody = table.createTBody();
+            const headerRow = thead.insertRow();
+            const headers = [
+                { text: "Name", key: "name" },
+                { text: "Flea Price", key: "avg24hPrice" },
+                { text: "Base Price", key: "basePrice" },
+                { text: "Offers", key: "lastOfferCount" },
+                { text: "Base Delta", key: "delta" }
+            ];
+
+            headers.forEach(({ text, key }) => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                th.dataset.key = key;
+                th.addEventListener('click', () => handleSort(key));
+                if (key === currentSortKey) {
+                    th.classList.add(sortDirection === 1 ? 'sorted-asc' : 'sorted-desc');
+                } else {
+                    th.classList.remove('sorted-asc', 'sorted-desc');
+                }
+                headerRow.appendChild(th);
+            });
+
+            data.forEach(item => {
+                if (!item) return;
+                const row = tbody.insertRow();
+                row.insertCell().textContent = item.name || 'Unknown Name';
+                row.insertCell().textContent = formatPrice(item.avg24hPrice);
+                row.insertCell().textContent = formatPrice(item.basePrice);
+                row.insertCell().textContent = item.lastOfferCount !== null && item.lastOfferCount !== undefined ? item.lastOfferCount : 'N/A';
+                 const delta = (item.basePrice !== null && item.avg24hPrice !== null)
+                    ? item.basePrice - item.avg24hPrice
+                    : null;
+                row.insertCell().textContent = formatPrice(delta);
+            });
+
+            resultsElement.appendChild(table);
+        };
+
+        const handleSort = (key) => {
+            if (isLoading) return;
+            if (currentSortKey === key) {
+                sortDirection *= -1;
+            } else {
+                currentSortKey = key;
+                sortDirection = 1;
+            }
+            const processedData = filterAndSortData();
+            displayResults(processedData);
+        };
+
+        const updatePriceRangeText = () => {
+            const isChecked = document.getElementById('priceFilterToggle').checked;
+            const text = isChecked ? '400k+' : '350k-400k';
+            document.getElementById('priceRangeText').textContent = text;
+        };
+
+        const handleFilterChange = () => {
+            if (isLoading) return;
+            const isChecked = document.getElementById('priceFilterToggle').checked;
+            minPrice = isChecked ? 400001 : 350001;
+            maxPrice = isChecked ? null : 400000;
+            updatePriceRangeText();
+            const processedData = filterAndSortData();
+            displayResults(processedData);
+        };
+
+        const handleSearch = (event) => {
+             if (isLoading) return;
+            searchTerm = event.target.value;
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const processedData = filterAndSortData();
+                displayResults(processedData);
+            }, 300);
+        };
+
+        const fetchData = (isAutoRefresh = false, force = false) => {
+            if (isLoading) {
+                 console.log("Fetch skipped: already loading.");
+                 return;
+            }
+            isLoading = true;
+            if(refreshButton) refreshButton.disabled = true;
+
+            const cachedTimestamp = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+            const cachedDataJSON = localStorage.getItem(CACHE_KEY_DATA);
+            const now = Date.now();
+            let isCacheValid = false;
+            let parsedCacheData = null;
+
+            if (!force && cachedTimestamp && cachedDataJSON) {
+                const timestamp = parseInt(cachedTimestamp, 10);
+                if (!isNaN(timestamp) && (now - timestamp < CACHE_DURATION_MS)) {
+                    try {
+                        parsedCacheData = JSON.parse(cachedDataJSON);
+                        if (Array.isArray(parsedCacheData)) {
+                            isCacheValid = true;
+                        } else {
+                            console.warn("Cached data is not an array. Ignoring cache.");
+                            parsedCacheData = null;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing cached data:", e);
+                        localStorage.removeItem(CACHE_KEY_DATA);
+                        localStorage.removeItem(CACHE_KEY_TIMESTAMP);
+                    }
+                } else {
+                     if (!isAutoRefresh) console.log("Cache expired.");
+                }
+            } else if (force) {
+                 console.log("Force refresh requested, ignoring cache.");
+            }
+             else {
+                 if (!isAutoRefresh) console.log("No cache found.");
+            }
+
+            if (isCacheValid && !force) {
+                 if (!isAutoRefresh) console.log("Using cached data.");
+                 allFetchedData = parsedCacheData;
+                 const processedData = filterAndSortData();
+                 displayResults(processedData);
+                 isLoading = false;
+                 if(refreshButton) refreshButton.disabled = false;
+            } else {
+                 if (force || !isAutoRefresh) {
+                     console.log(`Workspaceing new data from API... (Force: ${force}, AutoRefresh: ${isAutoRefresh})`);
+                     resultsElement.classList.add('loading');
+                     resultsElement.innerHTML = '<p>Loading market data</p>';
+                     const headers = document.querySelectorAll('th');
+                     headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
                  } else {
-                     // Log silently for failed auto-refresh
-                     console.warn("Auto-refresh failed:", error.message);
+                     console.log("Auto-refresh: Cache invalid or expired, fetching in background...");
                  }
-                 // Ensure we don't proceed with stale data if fetch failed
-                 allFetchedData = []; // Clear data on fetch failure
-             } finally {
-                  // Ensure loading indicators are removed even if there was an error during fetch
-                  resultsEl?.classList.remove(CONFIG.CSS_CLASSES.loading);
-             }
-         } // End API fetch block
-         
-         // --- Process and Display Data ---
-         // This runs whether data came from cache or fresh fetch (unless fetch failed)
-         dataToDisplay = filterAndSortData();
-         displayResults(dataToDisplay);
-         
-         // --- Finalize ---
-         setLoadingState(false); // Set loading state back to false
-         
-         // Ensure the "no results" message is shown if loading finishes with no data
-         // (This check might be redundant due to displayResults handling empty arrays, but adds safety)
-         if (resultsEl && !resultsEl.hasChildNodes() && !isLoading) {
-              displayResults([]);
-         }
-         }
-         
-         
-         // --- Initialization ---
-         
-         /**
-         * Initializes the application: gets element references, applies theme, sets up listeners, and fetches initial data.
-         */
-         function init() {
-         // Get DOM element references
-         themeIconEl = document.getElementById(CONFIG.ELEMENT_IDS.themeIcon);
-         themeTextEl = document.getElementById(CONFIG.ELEMENT_IDS.themeText);
-         resultsEl = document.getElementById(CONFIG.ELEMENT_IDS.results);
-         refreshButtonEl = document.getElementById(CONFIG.ELEMENT_IDS.refreshButton);
-         priceFilterToggleEl = document.getElementById(CONFIG.ELEMENT_IDS.priceFilterToggle);
-         priceRangeTextEl = document.getElementById(CONFIG.ELEMENT_IDS.priceRangeText);
-         searchInputEl = document.getElementById(CONFIG.ELEMENT_IDS.searchInput);
-         
-         // Check if essential elements are present
-         if (!resultsEl || !priceFilterToggleEl || !priceRangeTextEl || !searchInputEl) {
-             console.error("One or more essential UI elements are missing. Cannot initialize.");
-             // Optionally display a user-facing error message on the page
-             document.body.innerHTML = '<p>Error: Application UI elements missing. Please check the HTML structure.</p>';
-             return; // Stop initialization
-         }
-         
-         // Apply initial theme
-         applySavedTheme();
-         
-         // Setup event listeners
-         // Theme toggle listener (assuming a button/element with id="theme-toggle-button" exists)
-         const themeToggleButton = document.getElementById('theme-toggle-button'); // Example ID
-         if (themeToggleButton) {
-              themeToggleButton.addEventListener('click', toggleTheme);
-         } else if (themeIconEl) {
-              // Fallback: make the icon itself clickable if no dedicated button
-              themeIconEl.style.cursor = 'pointer';
-              themeIconEl.addEventListener('click', toggleTheme);
-         }
-         
-         priceFilterToggleEl.addEventListener('change', handleFilterChange);
-         searchInputEl.addEventListener('input', handleSearch);
-         
-         if (refreshButtonEl) {
-             refreshButtonEl.addEventListener('click', handleRefreshClick);
-         } else {
-             console.warn("Refresh button element not found. Manual refresh disabled.");
-         }
-         
-         // Initial UI setup
-         updatePriceRangeText();
-         
-         // Fetch initial data (will use cache if valid)
-         fetchData();
-         
-         // Set up auto-refresh interval
-         console.log(`Setting up auto-refresh every ${CONFIG.CACHE_DURATION_MS / 60000} minutes.`);
-         if (refreshIntervalId) { // Clear any existing interval (e.g., during development hot-reloads)
-             clearInterval(refreshIntervalId);
-         }
-         refreshIntervalId = setInterval(() => {
-             // Fetch data in the background, don't force cache bypass
-             fetchData(true, false);
-         }, CONFIG.CACHE_DURATION_MS);
-         }
-         
-         // --- Start Application ---
-         // Wait for the DOM to be fully loaded before running initialization
-         if (document.readyState === 'loading') { // Loading hasn't finished yet
-         document.addEventListener('DOMContentLoaded', init);
-         } else { // `DOMContentLoaded` has already fired
-         init();
-         }
-         
-         })(); // Immediately invoke the function expression
-         
-      </script>
-   </body>
+
+                fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ query: API_QUERY }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                throw new Error(`HTTP error! status: ${response.status}, message: ${text || 'No details'}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (result.errors) {
+                            throw new Error(result.errors.map(e => e.message).join(', '));
+                        }
+                        const items = result.data?.items;
+                        if (!Array.isArray(items)) {
+                            throw new Error("API response did not contain an items array.");
+                        }
+
+                        console.log("Data fetched successfully.");
+                        allFetchedData = items;
+
+                        try {
+                            localStorage.setItem(CACHE_KEY_DATA, JSON.stringify(allFetchedData));
+                            localStorage.setItem(CACHE_KEY_TIMESTAMP, now.toString());
+                            console.log("Data cached successfully.");
+                        } catch (e) {
+                            console.error("Error saving data to localStorage:", e);
+                        }
+
+                        const processedData = filterAndSortData();
+                        displayResults(processedData);
+                    })
+                    .catch(error => {
+                        console.error('Error during fetch:', error);
+                        if (!isAutoRefresh || force) {
+                             resultsElement.classList.remove('loading');
+                             resultsElement.innerHTML = `
+                                <p style="padding: 2rem; text-align: center; color: var(--danger-color);">
+                                    Error loading data: ${error.message}. Please try again later.
+                                </p>`;
+                        } else {
+                             console.warn("Auto-refresh failed:", error.message);
+                        }
+                    })
+                    .finally(() => {
+                        isLoading = false;
+                        if(refreshButton) refreshButton.disabled = false;
+                        resultsElement.classList.remove('loading');
+                         if (!resultsElement.hasChildNodes() && !isLoading) {
+                             displayResults([]);
+                         }
+                    });
+            }
+        };
+
+        applySavedTheme();
+
+        document.getElementById('priceFilterToggle').addEventListener('change', handleFilterChange);
+        document.getElementById('searchInput').addEventListener('input', handleSearch);
+        if (refreshButton) {
+            refreshButton.addEventListener('click', () => {
+                fetchData(false, true);
+            });
+        } else {
+            console.error("Refresh button element not found!");
+        }
+
+
+        updatePriceRangeText();
+        fetchData();
+
+        console.log(`Setting up auto-refresh every ${CACHE_DURATION_MS / 1000 / 60} minutes.`);
+        if (refreshIntervalId) {
+            clearInterval(refreshIntervalId);
+        }
+        refreshIntervalId = setInterval(() => {
+            fetchData(true, false);
+        }, CACHE_DURATION_MS);
+
+    </script>
+</body>
 </html>
